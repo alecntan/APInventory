@@ -1,7 +1,8 @@
 # Profile
-As defined by RFC6906:
+As defined by [RFC6906](https://datatracker.ietf.org/doc/html/rfc6906):
 
-|"A profile is defined to not alter the semantics of the resource representation itslef, but to allow clients to learn about the additional semantics (constraints, conventions, extensions) that are associated with the resource representation..."
+> "A profile is defined to not alter the semantics of the resource representation itself, but to allow clients to learn about the additional semantics (constraints, conventions, extensions) that are associated with the resource representation..."
+
 ## Semantic Descriptors
 
 **Thing**

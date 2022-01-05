@@ -1,5 +1,7 @@
 # Profile
+As defined by RFC6906:
 
+|"A profile is defined to not alter the semantics of the resource representation itslef, but to allow clients to learn about the additional semantics (constraints, conventions, extensions) that are associated with the resource representation..."
 ## Semantic Descriptors
 
 **Thing**

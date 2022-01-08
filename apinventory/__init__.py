@@ -4,7 +4,7 @@ from .config import Default
 
 from .database import db
 
-def create_app(config_filename='my_config.py'):
+def create_app(config_filename=None):
 
     app = Flask(__name__, instance_relative_config=True)
     

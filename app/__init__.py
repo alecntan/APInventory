@@ -1,14 +1,19 @@
 import os
 from flask import Flask
-from app.config import Default
+from .config import Default
 
+from .database import db
 
 def create_app(config_filename='my_config.py'):
 
     app = Flask(__name__, instance_relative_config=True)
-
+    
     # Load Default
     app.config.from_object(Default)
+
+    # Load Extensions
+    db.init_app(app)
+
 
     # Override default config (if exists)
     if config_filename is not None:
@@ -21,11 +26,8 @@ def create_app(config_filename='my_config.py'):
     except OSError:
         pass
 
-
-    @app.route('/')
-    def index():
-        return app.config['MSG']
+    from . import inventory
+    app.register_blueprint(inventory.inventory)
     
-
     return app
 

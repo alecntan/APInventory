@@ -5,7 +5,12 @@ Media Type: https://github.com/collection-json/spec
 By: Alec Tan
 """
 
+CONTENT_TYPE='application/vnd.collection+json'
+
+
+
 import json
+from flask import Response
 
 class GenericCollection:
 
@@ -100,20 +105,11 @@ class GenericCollection:
 
 class CollectionOfStorage(GenericCollection):
 
-    def __init__(self, href, search_href, items=[]):
+    def __init__(self, href, inventory_href):
 
-        super().__init__(href, items=items)
-
-        queries_data  = [{'name' : 'search', 'value' : ""}]
-        template_data = [{'name' : 'name'    , 'value' : ''},
-                         {'name' : 'location', 'value' : ''},
-                         {'name' : 'comments', 'value' : ''}
-                        ]
+        super().__init__(href)
+        self.add_link(inventory_href, 'inventory', 'All Storages', 'Inventory')
         
-        self.add_link(href, 'inventory', 'All Storages', 'Inventory')
-        self.add_query_template(search_href, 'search', 'Search Storage', 'Search', queries_data)
-        self.set_template(template_data)
-
     def add_storage(self, href, name, location, comments, things_href):
 
         data = [{'name' : 'name'    , 'value' : name},
@@ -127,36 +123,36 @@ class CollectionOfStorage(GenericCollection):
                   'render' : 'link'}]
    
         self.add_item(href, data, links)
+    
+    def set_storage_queries(self, search_href):
 
+        queries_data  = [{'name' : 'name'    , 'value' : ''},
+                         {'name' : 'location', 'value' : ''},
+                         {'name' : 'comments', 'value' :''}]
 
+        self.add_query_template(search_href, 'search', 'Search Storage', 'Search', queries_data)
 
-class CollectionOfThing(GenericCollection):
+    def set_storage_template(self):
 
-    def __init__(self, href, search_href, items=[]):
-
-        super().__init__(href, items=items)
-
-        thing_queries_data  = [{'name' : 'search', 'value' : ""}]
         template_data = [{'name' : 'name'    , 'value' : ''},
-                         {'name' : 'identifier', 'value' : ''},
-                         {'name' : 'status', 'value' : ''},
-                         {'name' : 'category', 'value' : ''},
-                         {'name' : 'comments', 'value' : ''},
-                         {'name' : 'owner', 'value' : ''}
-                        ]
-
-        self.add_query_template(search_href, 'search', 'Search for Thing', 'Search', thing_queries_data)
+                         {'name' : 'location', 'value' : ''},
+                         {'name' : 'comments', 'value' : ''}]
+                        
         self.set_template(template_data)
-
-
-    def add_thing(self, href, name, identifier, status, category, comments, owner):
         
-        data = [{'name' : 'name'      , 'value' : name},
-                {'name' : 'identifier', 'value' : identifier},
-                {'name' : 'status'    , 'value' : status},
-                {'name' : 'category'  , 'value' : category},
-                {'name' : 'comments'  , 'value' : comments},
-                {'name' : 'owner'     , 'value' : owner}]
+
+
+class CollectionOfItem(GenericCollection):
+
+    def store_item(self, href, storage_href, name, identifier, status, category, comments, serialNumber, owner):
+        
+        data = [{'name' : 'name'        , 'value' : name},
+                {'name' : 'identifier'  , 'value' : identifier},
+                {'name' : 'status'      , 'value' : status},
+                {'name' : 'category'    , 'value' : category},
+                {'name' : 'comments'    , 'value' : comments},
+                {'name' : 'serialNumber', 'value' : serialNumber},
+                {'name' : 'owner'       , 'value' : owner}]
 
         links = [{'href'   : storage_href,
                   'rel'    : 'stored_by',
@@ -165,3 +161,40 @@ class CollectionOfThing(GenericCollection):
                   'render' : 'link'}]
 
         self.add_item(href, data=data, links=links)
+
+    def set_storage_link(self, storage_href):
+
+        self.add_link(storage_href, 'stored by', 'Storage holding these items', 'Storage')
+
+    def set_item_template(self):
+        
+        template_data = [{'name' : 'name'    , 'value' : ''},
+                         {'name' : 'identifier', 'value' : ''},
+                         {'name' : 'status', 'value' : ''},
+                         {'name' : 'category', 'value' : ''},
+                         {'name' : 'comments', 'value' : ''},
+                         {'name' : 'serialNumber', 'value' : ''},
+                         {'name' : 'owner', 'value' : ''}
+                        ]
+ 
+        self.set_template(template_data)
+
+    def set_item_queries(self, search_href):
+
+        item_queries_data  = [{'name' : 'name'    , 'value' : ''},
+                              {'name' : 'identifier', 'value' : ''},
+                              {'name' : 'status', 'value' : ''},
+                              {'name' : 'category', 'value' : ''},
+                              {'name' : 'comments', 'value' : ''},
+                              {'name' : 'serialNumber', 'value' : ''},
+                              {'name' : 'owner', 'value' : ''}
+                             ]
+
+        self.add_query_template(search_href, 'search', 'Search for Thing', 'Search', item_queries_data)
+
+
+
+def get_collection_response(val, code):
+    return Response(val, mimetype=CONTENT_TYPE, content_type=CONTENT_TYPE)
+
+

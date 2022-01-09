@@ -97,6 +97,7 @@ def add_new_storage():
     new_storage_href = build_storage_url(request.url_root, storage_id)
     return make_response('', '201', {'Location' : new_storage_href})
 
+
 @inventory.route('/storage/search', methods=['GET'])
 def search_storage():
     
@@ -145,6 +146,20 @@ def get_storage(id):
     response.add_storage(request.base_url, storage.name, datetime.now(), storage.location, storage.notes, items_href)
 
     return get_collection_response(response.get_json(), '200')
+
+
+@inventory.route('/storage/<id>', methods=['DELETE'])
+def delete_storage(id):
+
+    try:
+        Storage.query.filter_by(id=id).delete()
+        db.session.commit()
+    except:
+        return make_response('', '500', {'error' : 'Internal Server Error', 'message' : 'Database failed to delete storage'})
+
+    return make_response('', '204')
+
+    
 
 
 @inventory.route('/storage/<id>/items', methods=['GET'])

@@ -152,6 +152,7 @@ def get_storage(id):
 def delete_storage(id):
 
     try:
+        Item.query.filter_by(storage_id=id).delete()
         Storage.query.filter_by(id=id).delete()
         db.session.commit()
     except:

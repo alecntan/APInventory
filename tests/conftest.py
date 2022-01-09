@@ -2,6 +2,7 @@ import os
 import pytest
 
 from apinventory import create_app
+from apinventory.database import db
 
 
 @pytest.fixture
@@ -14,7 +15,8 @@ def client():
             db.create_all()
         yield client
 
-    os.remove(app.config['DATABASE_PATH'])
+    #os.remove(app.config['DATABASE_PATH'])
+    os.remove('/tmp/test.db')
     
 
 

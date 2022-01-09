@@ -20,6 +20,7 @@ class Storage(db.Model):
 
     items    = db.relationship('Item', backref='storage', lazy=True)
 
+
 class Item(db.Model):
 
     id           = db.Column(db.Integer, primary_key=True)

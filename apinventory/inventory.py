@@ -1,5 +1,6 @@
-from flask import Blueprint, current_app, request, Response, redirect, url_for
+from flask import Blueprint, current_app, request, Response, redirect, url_for, make_response
 from sqlalchemy import or_
+from datetime import datetime
 
 from .collection import *
 from .database import *
@@ -27,14 +28,74 @@ def index():
 
         storage_url = build_storage_url(request.url_root, s.id)
         items_url = build_storage_items_url(request.url_root, s.id)
-
-        response.add_storage(storage_url, s.name, s.location, s.notes, items_url)
+        response.add_storage(storage_url, s.name, datetime.now(), s.location, s.notes, items_url)
 
     return get_collection_response(response.get_json(), '200')
 
 @inventory.route('/', methods=['POST'])
 def add_new_storage():
-    redirect(url_for('inventory.index'))
+
+    request_data = request.get_json()
+
+    code = '400'
+    title = 'Bad Request'
+
+    if request_data == None or request_data['data'] == None:
+        message = 'Null object was sent'
+        return make_response('', code, {'error' : title, 'message' : message})
+
+    data_arr = request_data['data']
+
+    if len(data_arr) != 3:
+        message = 'Incorrect number of data items sent. Ensure that you use the template provided.'
+        return make_response('', code, {'error' : title, 'message' : message})
+
+    name = ''
+    loc = ''
+    notes = ''
+
+    for data_pair in data_arr:
+
+        if data_pair['name'] == 'name':
+            name = data_pair['value']
+
+        elif data_pair['name'] == 'location':
+            loc = data_pair['value']
+
+        elif data_pair['name'] == 'notes':
+            notes = data_pair['value']
+
+        else:
+            message = 'Unexpected data given - {}'.format(data_pair['name'])
+            return make_response('', code, {'error' : title, 'message' : message})
+
+    if name == '' or loc == '':
+        message = 'No name or location was given'
+        return make_response('', code, {'error' : title, 'message' : message})
+
+
+    code = '409'
+    title = 'Conflict'
+
+    if  Storage.query.filter_by(name=name).first():
+        message = 'The name {} already exists.'.format(name)
+        return make_response('', code, {'error' : title, 'message' : message})
+   
+    # Create new storage      
+   
+    try:
+        new_storage = Storage(date=datetime.now(), name=name, location=loc, notes=notes)
+        db.session.add(new_storage)
+        db.session.commit()
+    except:
+        code = '500'
+        title = 'Internal Server Error'
+        message = 'Failed to create new storage'
+        return make_response('', code, {'error' : title, 'message' : message})
+
+    storage_id = Storage.query.filter_by(name=name).first().id
+    new_storage_href = build_storage_url(request.url_root, storage_id)
+    return make_response('', '201', {'Location' : new_storage_href})
 
 @inventory.route('/storage/search', methods=['GET'])
 def search_storage():
@@ -48,7 +109,7 @@ def search_storage():
 
         name = request.args.get('name')
         loc  = request.args.get('location')
-        notes = request.args.get('comments')
+        notes = request.args.get('notes')
 
         if name:
             storage_query = storage_query.filter_by(name=name)
@@ -81,7 +142,7 @@ def get_storage(id):
     items_href = build_storage_items_url(request.url_root, id)
 
     response = CollectionOfStorage(request.base_url, request.url_root)
-    response.add_storage(request.base_url, storage.name, storage.location, storage.notes, items_href)
+    response.add_storage(request.base_url, storage.name, datetime.now(), storage.location, storage.notes, items_href)
 
     return get_collection_response(response.get_json(), '200')
 

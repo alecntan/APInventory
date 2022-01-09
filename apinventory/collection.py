@@ -18,9 +18,9 @@ class GenericCollection:
 
         self.href = href
         self.version = "1.0"
-        self.links = links
-        self.items = items
-        self.queries = queries
+        self.links = links if links else []
+        self.items = items if items else []
+        self.queries = queries if queries else []
         self.template = template
         self.error = error
         
@@ -110,13 +110,15 @@ class CollectionOfStorage(GenericCollection):
         super().__init__(href)
         self.add_link(inventory_href, 'inventory', 'All Storages', 'Inventory')
         
-    def add_storage(self, href, name, location, comments, things_href):
+    def add_storage(self, href, name, date, location, notes, things_href):
 
         data = [{'name' : 'name'    , 'value' : name},
+                {'name' : 'date'    , 'value' : date.strftime('%d/%m/%Y')},
                 {'name' : 'location', 'value' : location},
-                {'name' : 'comments', 'value' : comments}]
+                {'name' : 'notes'   , 'value' : notes}]
 
         links = [{'href'   : things_href,
+        
                   'rel'    : 'contains',
                   'prompt' : 'Things stored in this storage',
                   'name'   : 'Collection of Things',
@@ -128,15 +130,16 @@ class CollectionOfStorage(GenericCollection):
 
         queries_data  = [{'name' : 'name'    , 'value' : ''},
                          {'name' : 'location', 'value' : ''},
-                         {'name' : 'comments', 'value' :''}]
+                         {'name' : 'notes'   , 'value' :''}]
 
         self.add_query_template(search_href, 'search', 'Search Storage', 'Search', queries_data)
 
     def set_storage_template(self):
 
         template_data = [{'name' : 'name'    , 'value' : ''},
+                         {'name' : 'date'    , 'value' : ''},
                          {'name' : 'location', 'value' : ''},
-                         {'name' : 'comments', 'value' : ''}]
+                         {'name' : 'notes'   , 'value' : ''}]
                         
         self.set_template(template_data)
         
@@ -144,13 +147,13 @@ class CollectionOfStorage(GenericCollection):
 
 class CollectionOfItem(GenericCollection):
 
-    def store_item(self, href, storage_href, name, identifier, status, category, comments, serialNumber, owner):
+    def store_item(self, href, storage_href, name, identifier, status, category, notes, serialNumber, owner):
         
         data = [{'name' : 'name'        , 'value' : name},
                 {'name' : 'identifier'  , 'value' : identifier},
                 {'name' : 'status'      , 'value' : status},
                 {'name' : 'category'    , 'value' : category},
-                {'name' : 'comments'    , 'value' : comments},
+                {'name' : 'notes'       , 'value' : notes },
                 {'name' : 'serialNumber', 'value' : serialNumber},
                 {'name' : 'owner'       , 'value' : owner}]
 
@@ -172,7 +175,7 @@ class CollectionOfItem(GenericCollection):
                          {'name' : 'identifier', 'value' : ''},
                          {'name' : 'status', 'value' : ''},
                          {'name' : 'category', 'value' : ''},
-                         {'name' : 'comments', 'value' : ''},
+                         {'name' : 'notes'   , 'value' : ''},
                          {'name' : 'serialNumber', 'value' : ''},
                          {'name' : 'owner', 'value' : ''}
                         ]
@@ -185,7 +188,7 @@ class CollectionOfItem(GenericCollection):
                               {'name' : 'identifier', 'value' : ''},
                               {'name' : 'status', 'value' : ''},
                               {'name' : 'category', 'value' : ''},
-                              {'name' : 'comments', 'value' : ''},
+                              {'name' : 'notes', 'value' : ''},
                               {'name' : 'serialNumber', 'value' : ''},
                               {'name' : 'owner', 'value' : ''}
                              ]

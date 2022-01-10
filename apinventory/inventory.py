@@ -41,7 +41,7 @@ def add_new_storage():
     title = 'Bad Request'
 
     if request_data == None or request_data['data'] == None:
-        message = 'Null object was sent'
+        message = 'Null object was sent, or no data was given'
         return make_response('', code, {'error' : title, 'message' : message})
 
     data_arr = request_data['data']
@@ -160,8 +160,38 @@ def delete_storage(id):
 
     return make_response('', '204')
 
-    
 
+@inventory.route('/storage/<id>', methods=['PUT'])
+def update_storage(id):
+    
+    new_val_json = request.get_json()
+    current_storage = Storage.query.filter_by(id=id).first()
+
+    if not new_val_json or not new_val_json['data']:
+        return make_response('', '400', {'error' : 'Bad Request', 'message' : 'Null object was sent, or no data was given'})
+
+    for new_val_obj in new_val_json['data']:
+
+        if new_val_obj['name'] == 'name' and new_val_obj['value']:
+            new_name = new_val_obj['value']
+            if new_name != current_storage.name and Storage.query.filter_by(name=new_name).first():
+                return make_response('', '409', {'error' : 'Conflict', 'message' : 'New name already exists'})
+
+            current_storage.name = new_name
+
+        elif new_val_obj['name'] == 'location' and new_val_obj['value']:
+            current_storage.location = new_val_obj['value']
+
+        elif new_val_obj['name'] == 'notes' and new_val_obj['value']:
+            current_storage.notes = new_val_obj['value']
+
+    try:
+        db.session.commit() 
+    except:
+        return make_response('', '500', {'error' : 'Internal Server Error', 'message' : 'Failed to update storage details'})
+
+    return make_response('', '200')
+   
 
 @inventory.route('/storage/<id>/items', methods=['GET'])
 def get_storage_items(id):

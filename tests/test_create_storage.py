@@ -19,12 +19,12 @@ def test_none_error(client):
     response = client.post('/', json={'data' : new_storage_data})
     assert response.status_code == 400
     assert response.headers['error'] == 'Bad Request'
-    assert response.headers['message'] == 'Null object was sent'
+    assert response.headers['message'] == 'Null object was sent, or no data was given'
 
     response = client.post('/', json=None)
     assert response.status_code == 400
     assert response.headers['error'] == 'Bad Request'
-    assert response.headers['message'] == 'Null object was sent'
+    assert response.headers['message'] == 'Null object was sent, or no data was given'
 
 
 def test_send_less_data(client):

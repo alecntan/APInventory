@@ -147,9 +147,10 @@ class CollectionOfStorage(GenericCollection):
 
 class CollectionOfItem(GenericCollection):
 
-    def store_item(self, href, storage_href, name, identifier, status, category, notes, serialNumber, owner):
+    def store_item(self, href, storage_href, name, date, identifier, status, category, notes, serialNumber, owner):
         
         data = [{'name' : 'name'        , 'value' : name},
+                {'name' : 'date'        , 'value' : date.strftime('%d/%m/%Y')},
                 {'name' : 'identifier'  , 'value' : identifier},
                 {'name' : 'status'      , 'value' : status},
                 {'name' : 'category'    , 'value' : category},

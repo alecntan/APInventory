@@ -206,10 +206,98 @@ def get_storage_items(id):
         for i in items:
 
             item_href = build_item_url(request.url_root, i.id)
-            response.store_item(item_href, storage_href, i.name, i.identifier, i.status, i.category, i.notes, i.serialNumber, i.owner)
+            response.store_item(item_href, storage_href, i.name, datetime.now(), i.identifier, i.status, i.category, i.notes, i.serialNumber, i.owner)
 
         return get_collection_response(response.get_json(), '200')
 
+@inventory.route('/storage/<id>/items', methods=['POST'])
+def add_item_to_storage(id):
+
+    response = request.get_json()
+
+    if not response or not response['data']:
+        return make_response('', '400', {'error' : 'Bad Request', 'message' : 'Null object was sent, or no data was given'})
+  
+    item_name = ''
+    item_identifier = ''
+    item_status = ''
+    item_category = ''
+    item_serialNumber = ''
+    item_owner = ''
+    item_notes = ''
+
+    for data in response['data']:
+
+        if data['name'] == 'name' and data['value']:
+            item_name = data['value']
+
+        elif data['name'] == 'identifier' and data['value']:
+            item_identifier = data['value']
+
+        elif data['name'] == 'status' and data['value']:
+            item_status = data['value']
+
+        elif data['name'] == 'category' and data['value']:
+            item_category = data['value']
+
+        elif data['name'] == 'serialNumber' and data['value']:
+            item_serialNumber = data['value']
+
+        elif data['name'] == 'owner' and data['value']:
+            item_owner = data['value']
+
+        elif data['name'] == 'notes' and data['value']:
+            item_notes = data['value']
+
+    message = ''
+    has_error = False
+    if not item_name:
+        message ='No item name was given'
+        has_error = True
+    elif not item_status:
+        message = 'No item status was given'
+        has_error = True
+    elif not item_identifier:
+        message = 'No item identifier was given'
+        has_error = True
+    elif not item_category:
+        message = 'No item category was given'
+        has_error = True
+    elif not item_serialNumber:
+        message = 'No item serial number was given'
+        has_error = True
+    elif not item_owner:
+        message = 'No item owner was given'
+        has_error = True
+
+    if has_error:
+        return make_response('', '400', {'error' : 'Bad request', 'message' : message})
+
+    if Item.query.filter_by(identifier=item_identifier).first():
+        return make_response('', '409', {'error' : 'Conflict', 'message' : 'Item with identifier {} already exists'.format(item_identifier)})
+
+    try:
+        new_item = Item(date=datetime.now()
+                       ,name=item_name
+                       ,identifier=item_identifier
+                       ,status=item_status
+                       ,category=item_category
+                       ,owner=item_owner
+                       ,serialNumber=item_serialNumber
+                       ,notes=item_notes
+                       ,storage_id=id)
+
+        db.session.add(new_item)
+        db.session.commit()
+
+    except:
+        return make_response('', '500', {'error' : 'Internal Server Error', 'message' : 'Failed to add new item'}) 
+
+     
+    new_item = Item.query.filter_by(identifier=item_identifier).first()
+    return make_response('', '201', {'Location' : build_item_url(request.url_root, new_item.id)})
+
+    
 @inventory.route('/item/<id>', methods=['GET'])
 def get_item(id):
 
@@ -218,7 +306,7 @@ def get_item(id):
     
     response = CollectionOfItem(request.base_url)
     response.set_storage_link(storage_href)
-    response.store_item(request.base_url, storage_href, item.name, item.identifier, item.status, item.category, item.notes, item.serialNumber, item.owner)
+    response.store_item(request.base_url, storage_href, item.name, datetime.now(), item.identifier, item.status, item.category, item.notes, item.serialNumber, item.owner)
 
     return get_collection_response(response.get_json(), '200')
     

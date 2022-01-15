@@ -206,7 +206,7 @@ def get_storage_items(id):
         for i in items:
 
             item_href = build_item_url(request.url_root, i.id)
-            response.store_item(item_href, storage_href, i.name, datetime.now(), i.identifier, i.status, i.category, i.notes, i.serialNumber, i.owner)
+            response.store_item(item_href, storage_href, i.name, datetime.now(), i.identifier, i.status, i.category.name, i.notes, i.serialNumber, i.owner)
 
         return get_collection_response(response.get_json(), '200')
 
@@ -277,11 +277,19 @@ def add_item_to_storage(id):
         return make_response('', '409', {'error' : 'Conflict', 'message' : 'Item with identifier {} already exists'.format(item_identifier)})
 
     try:
+    
+        category = Category.query.filter_by(name=item_category).first()
+        if not category: 
+            new_category = Category(name=item_category)
+            db.session.add(new_category)
+            db.session.commit()
+       
+        category = Category.query.filter_by(name=item_category).first()
         new_item = Item(date=datetime.now()
                        ,name=item_name
                        ,identifier=item_identifier
                        ,status=item_status
-                       ,category=item_category
+                       ,category_id=category.id
                        ,owner=item_owner
                        ,serialNumber=item_serialNumber
                        ,notes=item_notes
@@ -306,7 +314,7 @@ def get_item(id):
     
     response = CollectionOfItem(request.base_url)
     response.set_storage_link(storage_href)
-    response.store_item(request.base_url, storage_href, item.name, datetime.now(), item.identifier, item.status, item.category, item.notes, item.serialNumber, item.owner)
+    response.store_item(request.base_url, storage_href, item.name, datetime.now(), item.identifier, item.status, item.category.name, item.notes, item.serialNumber, item.owner)
 
     return get_collection_response(response.get_json(), '200')
     
@@ -356,7 +364,7 @@ def search_item():
                             i.name,
                             i.identifier, 
                             i.status,
-                            i.category,
+                            i.category.name,
                             i.notes,
                             i.serialNumber,
                             i.owner)
@@ -364,4 +372,3 @@ def search_item():
 
     return get_collection_response(response.get_json(), '200')
     
-

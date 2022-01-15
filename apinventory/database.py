@@ -28,12 +28,18 @@ class Item(db.Model):
     name         = db.Column(db.String(MAX_NAME_LENGTH), nullable=False)
     identifier   = db.Column(db.String(MAX_IDEN_LENGTH), unique=True, nullable=False)
     status       = db.Column(db.String(MAX_STAT_LENGTH), nullable=False)
-    category     = db.Column(db.String(MAX_NAME_LENGTH), nullable=False)
+    #category     = db.Column(db.String(MAX_NAME_LENGTH), nullable=False)
     owner        = db.Column(db.String(MAX_NAME_LENGTH), nullable=False)
     notes        = db.Column(db.String(MAX_NOTES_LENGTH), nullable=True)
     serialNumber = db.Column(db.String(MAX_SERN_LENGTH), nullable=False)
 
-    storage_id = db.Column(db.Integer, db.ForeignKey('storage.id'), nullable=False)
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False)
+    storage_id  = db.Column(db.Integer, db.ForeignKey('storage.id'), nullable=False)
 
+class Category(db.Model):
     
+    id   = db.Column(db.Integer, primary_key=True)
+    name = db. Column(db.String(MAX_NAME_LENGTH), nullable=False, unique=True)
+
+    items = db.relationship('Item', backref='category', lazy=True)
     

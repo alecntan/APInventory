@@ -178,7 +178,8 @@ class CollectionOfItem(GenericCollection):
                          {'name' : 'category', 'value' : ''},
                          {'name' : 'notes'   , 'value' : ''},
                          {'name' : 'serialNumber', 'value' : ''},
-                         {'name' : 'owner', 'value' : ''}
+                         {'name' : 'owner', 'value' : ''},
+                         {'name' : 'storage', 'value' : ''}
                         ]
  
         self.set_template(template_data)
@@ -191,7 +192,8 @@ class CollectionOfItem(GenericCollection):
                               {'name' : 'category', 'value' : ''},
                               {'name' : 'notes', 'value' : ''},
                               {'name' : 'serialNumber', 'value' : ''},
-                              {'name' : 'owner', 'value' : ''}
+                              {'name' : 'owner', 'value' : ''},
+                              {'name' : 'storage', 'value' : ''}
                              ]
 
         self.add_query_template(search_href, 'search', 'Search for Thing', 'Search', item_queries_data)

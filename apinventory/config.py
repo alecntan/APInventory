@@ -2,7 +2,7 @@ from flask import Flask
 
 class Default:
 
-    SQLALCHEMY_DATABASE_URI = 'sqlite:////tmp/test.db'
+    DATABASE_PATH='/tmp/test.db'
+    SQLALCHEMY_DATABASE_URI='sqlite:///{}'.format(DATABASE_PATH)
     SQLALCHEMY_TRACK_MODIFICATIONS=False
-
-
+    TESTING=True

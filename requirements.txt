@@ -1,4 +1,4 @@
--e git+git@github.com:alecntan/APInventory.git@75b8ed46fb60ad7c6789b91813accfac382285d3#egg=APInventory
+-e git+git@github.com:alecntan/APInventory.git@0cac3d0d7123c2cac9e693962caf1015aba7d1a2#egg=apinventory
 attrs==21.4.0
 click==8.0.3
 Flask==2.0.2

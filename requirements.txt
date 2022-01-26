@@ -1,9 +1,10 @@
--e git+git@github.com:alecntan/APInventory.git@0cac3d0d7123c2cac9e693962caf1015aba7d1a2#egg=apinventory
+-e git+git@github.com:alecntan/APInventory.git@5b69f2c59949189858aaa1182679d7872a18a16f#egg=apinventory
 attrs==21.4.0
 click==8.0.3
 Flask==2.0.2
 Flask-SQLAlchemy==2.5.1
 greenlet==1.1.2
+gunicorn==20.1.0
 iniconfig==1.1.1
 itsdangerous==2.0.1
 Jinja2==3.0.3

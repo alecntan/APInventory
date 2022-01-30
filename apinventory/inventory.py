@@ -361,7 +361,7 @@ def update_item(id):
 
         elif data_obj['name'] == 'identifier' and data_obj['value']:
             new_id = data_obj['value']
-            if Item.query.filter_by(identifier=new_id).first():
+            if item.identifier != new_id and Item.query.filter_by(identifier=new_id).first():
                 return make_response('', '409', {'error' : 'Conflict', 'message' : 'Item with identifier {} already exists'.format(new_id)})
             
             item.identifier = new_id

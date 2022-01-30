@@ -22,7 +22,7 @@ def test_search_by_missing_category(client_with_item):
     response = client_with_item.get(path_url)
     assert response.status_code == 404
     assert response.headers['error'] == 'Not Found'
-    assert response.headers['message'] == 'Could not find any items that matched search parameters'
+    assert response.headers['message'] == 'Could not find items that matched search parameters'
     
 
 def test_search_by_name(client_with_item):

@@ -26,6 +26,6 @@ def create_app(config_filename=None):
 
     from . import inventory
     app.register_blueprint(inventory.inventory)
-    
+
     return app
 

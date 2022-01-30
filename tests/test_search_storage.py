@@ -34,7 +34,7 @@ def test_search_404(client):
 
     response = client.get(path_url)
     assert response.status_code == 404
-    assert response.headers['error'] == 'NOT FOUND'
+    assert response.headers['error'] == 'Not Found'
     assert response.headers['message'] == 'Could not find any Storage that matched search parameters'
 
 

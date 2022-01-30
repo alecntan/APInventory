@@ -7,7 +7,7 @@ def test_update_missing_item(client):
     new_item_data = [{'name' : 'name', 'value' : 'One Piece'}]
 
     response = client.put('/item/1', json={'data' : new_item_data})
-    assert response.status_code == 400
+    assert response.status_code == 404
 
 
 def test_update_item_no_data(client_with_item):

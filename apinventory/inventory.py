@@ -5,6 +5,7 @@ from datetime import datetime
 from .collection import *
 from .database import *
 from .url_builder import *
+from .response_builder import build_404
 
 CONTENT_TYPE='application/vnd.collection+json'
 
@@ -121,7 +122,8 @@ def search_storage():
 
     all_storages = storage_query.all()
     if not all_storages:
-        return make_response('', '404', {'error' : 'NOT FOUND' , 'message' : 'Could not find any Storage that matched search parameters'})
+        return build_404('Could not find any Storage that matched search parameters')
+        #return make_response('', '404', {'error' : 'NOT FOUND' , 'message' : 'Could not find any Storage that matched search parameters'})
 
     for s in all_storages:
 
@@ -137,16 +139,27 @@ def search_storage():
 def get_storage(id):
 
     storage = Storage.query.filter_by(id=id).first()
+
+    if not storage:
+        return build_404('Could not find any storage with id {}'.format(id))
+
     items_href = build_storage_items_url(request.url_root, id)
 
     response = CollectionOfStorage(request.base_url, request.url_root)
     response.add_storage(request.base_url, storage.name, datetime.now(), storage.location, storage.notes, items_href)
+    #response.set_storage_template()
+    #response.set_storage_queries(build_search_storage_url(request.url_root))
+
 
     return get_collection_response(response.get_json(), '200')
 
 
 @inventory.route('/storage/<id>', methods=['DELETE'])
 def delete_storage(id):
+
+    storage = Storage.query.filter_by(id=id).first()
+    if not storage:
+        return build_404('Could not find storage with id {}'.format(id))
 
     try:
         Item.query.filter_by(storage_id=id).delete()
@@ -163,6 +176,8 @@ def update_storage(id):
     
     new_val_json = request.get_json()
     current_storage = Storage.query.filter_by(id=id).first()
+    if not current_storage:
+        return build_404('Could not find storage with id {}'.format(id))
 
     if not new_val_json or not new_val_json['data']:
         return make_response('', '400', {'error' : 'Bad Request', 'message' : 'Null object was sent, or no data was given'})
@@ -193,6 +208,10 @@ def update_storage(id):
 @inventory.route('/storage/<id>/items', methods=['GET'])
 def get_storage_items(id):
 
+        storage = Storage.query.filter_by(id=id).first()
+        if not storage:
+            return build_404('Could not find storage with id {}'.format(id))
+
         items = Item.query.filter_by(storage_id=id).all()
         storage_href = build_storage_url(request.url_root, id)
         response = CollectionOfItem(request.base_url)
@@ -209,6 +228,9 @@ def get_storage_items(id):
 
 @inventory.route('/storage/<id>/items', methods=['POST'])
 def add_item_to_storage(id):
+
+    if not Storage.query.filter_by(id=id).first():
+        return build_404('Could not find storage with id {}'.format(id))
 
     response = request.get_json()
 
@@ -307,8 +329,10 @@ def add_item_to_storage(id):
 def get_item(id):
 
     item = Item.query.filter_by(id=id).first()
-    storage_href = build_storage_url(request.url_root, item.storage_id)
+    if not item:
+        return build_404('Could not find item with id {}'.format(id))
     
+    storage_href = build_storage_url(request.url_root, item.storage_id)
     response = CollectionOfItem(request.base_url)
     response.set_storage_link(storage_href)
     response.store_item(request.base_url, storage_href, item.name, datetime.now(), item.identifier, item.status, item.category.name, item.notes, item.serialNumber, item.owner)
@@ -321,8 +345,11 @@ def update_item(id):
 
     new_item_details = request.get_json()
     item = Item.query.filter_by(id=id).first()
-    
-    if not new_item_details or not item:
+
+    if not item:
+        return build_404('Could not find item with id {}'.format(id))
+
+    if not new_item_details:
         return make_response('', '400', {'error' : 'Bad Request', 'message' : 'No data was sent or item does not exist'})
    
 
@@ -389,7 +416,7 @@ def delete_item(id):
     
     item = Item.query.filter_by(id=id).first()
     if not item:
-        return make_response('', '404', {'error' : 'Not Found', 'message' : 'Item does not exist'})
+        return make_response('', '404', {'error' : 'Not Found', 'message' : 'Could not find item with id {}'.format(id)})
 
     Item.query.filter_by(id=id).delete()
     db.session.commit()
@@ -422,7 +449,8 @@ def search_item():
         if category_name:
             category = Category.query.filter_by(name=category_name).first() 
             if not category:
-                return make_response('', '404', {'error' : 'Not Found', 'message' : 'Could not find any items that matched search parameters'})
+                #return make_response('', '404', {'error' : 'Not Found', 'message' : 'Could not find any items that matched search parameters'})
+                return build_404('Could not find items that matched search parameters')
             item_query = item_query.filter_by(category_id=category.id)
         if notes:
             item_query = item_query.filter_by(notes=notes)

@@ -125,7 +125,7 @@ class CollectionOfStorage(GenericCollection):
                   'render' : 'link'}]
    
         self.add_item(href, data, links)
-    
+
     def set_storage_queries(self, search_href):
 
         queries_data  = [{'name' : 'name'    , 'value' : ''},

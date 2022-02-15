@@ -1,6 +1,9 @@
 import os
 from flask import Flask
 from .config import Default
+from flask_cors import CORS
+
+cors = CORS()
 
 from .database import db
 
@@ -13,6 +16,7 @@ def create_app(config_filename=None):
 
     # Load Extensions
     db.init_app(app)
+    cors.init_app(app)
 
     # Override default config (if exists)
     if config_filename != None:

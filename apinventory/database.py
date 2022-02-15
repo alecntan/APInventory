@@ -15,7 +15,7 @@ class Storage(db.Model):
     id       = db.Column(db.Integer, primary_key=True) 
     date     = db.Column(db.Date, nullable=False)
     name     = db.Column(db.String(MAX_NAME_LENGTH), unique=True, nullable=False)
-    location = db.Column(db.String(MAX_NAME_LENGTH), nullable=False)
+    location = db.Column(db.String(MAX_LOC_LENGTH), nullable=False)
     notes    =  db.Column(db.String(MAX_NOTES_LENGTH), nullable=True)
 
     items    = db.relationship('Item', backref='storage', lazy=True)

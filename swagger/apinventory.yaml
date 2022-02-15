@@ -1,0 +1,979 @@
+---
+openapi: 3.0.0
+info:
+  title: 'APInventory '
+  description: An API for an inventory system.
+  version: 1.0.0-oas3
+servers:
+- url: https://apinventory.alectan.dev/
+  description: Main Host
+tags:
+- name: Storage
+  description: Everything about Storage and Inventory
+- name: Item
+  description: Everything about Items in the Inventory.
+paths:
+  /:
+    summary: Home Page
+    description: The first path that clients go to.
+    get:
+      tags:
+      - Storage
+      summary: Get Inventory
+      responses:
+        "200":
+          description: OK
+          content:
+            application/vnd.collection+json:
+              schema:
+                $ref: '#/components/schemas/CollectionObject'
+              examples:
+                Empty Inventory:
+                  $ref: '#/components/examples/emptyInventory'
+                Inventory with one Storage:
+                  $ref: '#/components/examples/oneStorage'
+    post:
+      tags:
+      - Storage
+      summary: Add new Storage
+      description: Register a new storage object to the inventory system using the template object provided.
+      requestBody:
+        content:
+          application/vnd.collection+json:
+            schema:
+              $ref: '#/components/schemas/body'
+            example:
+              data:
+              - name: name
+                value: box-A
+              - name: location
+                value: Warehouse A
+              - name: notes
+                value: Full
+        required: true
+      responses:
+        "201":
+          description: CREATED
+          headers:
+            Location:
+              description: Url to the registered storage object.
+              style: simple
+              explode: false
+              schema:
+                type: string
+                format: url
+        "400":
+          description: BAD REQUEST
+          headers:
+            error:
+              $ref: '#/components/headers/Error'
+            message:
+              $ref: '#/components/headers/Message'
+        "409":
+          description: CONFLICT
+          headers:
+            error:
+              $ref: '#/components/headers/Error'
+            message:
+              $ref: '#/components/headers/Message'
+        "500":
+          description: INTERNAL SERVER ERROR
+          headers:
+            error:
+              $ref: '#/components/headers/Error'
+            message:
+              $ref: '#/components/headers/Message'
+  /storage/search:
+    summary: Search for storage
+    description: Search for a storage object that matched some search parameters.
+    get:
+      tags:
+      - Storage
+      summary: Get matching storage
+      parameters:
+      - name: name
+        in: query
+        description: Name of storage
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: location
+        in: query
+        description: Location of storage
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: notes
+        in: query
+        description: Relevant keywords
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/vnd.collection+json:
+              schema:
+                $ref: '#/components/schemas/CollectionObject'
+              examples:
+                Single Match:
+                  $ref: '#/components/examples/oneStorage'
+        "404":
+          description: NOT FOUND
+          headers:
+            error:
+              $ref: '#/components/headers/Error'
+            message:
+              $ref: '#/components/headers/Message'
+  /storage/{id}:
+    summary: A storage object registered with the inventory system.
+    get:
+      tags:
+      - Storage
+      parameters:
+      - name: id
+        in: path
+        description: Storage id
+        required: true
+        style: simple
+        explode: false
+        schema:
+          minimum: 1
+          type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/vnd.collection+json:
+              schema:
+                $ref: '#/components/schemas/CollectionObject'
+              examples:
+                box-A:
+                  $ref: '#/components/examples/oneStorage'
+        "404":
+          description: NOT FOUND
+          headers:
+            error:
+              $ref: '#/components/headers/Error'
+            message:
+              $ref: '#/components/headers/Message'
+    put:
+      tags:
+      - Storage
+      parameters:
+      - name: id
+        in: path
+        description: Storage id
+        required: true
+        style: simple
+        explode: false
+        schema:
+          minimum: 1
+          type: integer
+      requestBody:
+        description: Update Storage Template
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/storage_id_body'
+            example:
+              data:
+              - name: name
+                value: box-B
+              - name: location
+                value: Warehouse B
+              - name: notes
+                value: empty
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: BAD REQUEST
+          headers:
+            error:
+              $ref: '#/components/headers/Error'
+            message:
+              $ref: '#/components/headers/Message'
+        "409":
+          description: CONFLICT
+          headers:
+            error:
+              $ref: '#/components/headers/Error'
+            message:
+              $ref: '#/components/headers/Message'
+        "500":
+          description: INTERNAL SERVER ERROR
+          headers:
+            error:
+              $ref: '#/components/headers/Error'
+            message:
+              $ref: '#/components/headers/Message'
+        "404":
+          description: NOT FOUND
+          headers:
+            error:
+              $ref: '#/components/headers/Error'
+            message:
+              $ref: '#/components/headers/Message'
+    delete:
+      tags:
+      - Storage
+      parameters:
+      - name: id
+        in: path
+        description: Storage id
+        required: true
+        style: simple
+        explode: false
+        schema:
+          minimum: 1
+          type: integer
+      responses:
+        "204":
+          description: NO CONTENT
+        "500":
+          description: INTERNAL SERVER ERROR
+          headers:
+            error:
+              $ref: '#/components/headers/Error'
+            message:
+              $ref: '#/components/headers/Message'
+        "404":
+          description: NOT FOUND
+          headers:
+            error:
+              $ref: '#/components/headers/Error'
+            message:
+              $ref: '#/components/headers/Message'
+  /storage/{id}/items:
+    summary: Items stored in storage
+    description: Collection of items stored by a storage object
+    get:
+      tags:
+      - Storage
+      - Item
+      parameters:
+      - name: id
+        in: path
+        description: storage id
+        required: true
+        style: simple
+        explode: false
+        schema:
+          minimum: 1
+          type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/vnd.collection+json:
+              schema:
+                $ref: '#/components/schemas/CollectionObject'
+              examples:
+                Item in Box A:
+                  $ref: '#/components/examples/ItemCollection'
+        "404":
+          description: NOT FOUND
+          headers:
+            error:
+              $ref: '#/components/headers/Error'
+            message:
+              $ref: '#/components/headers/Message'
+    post:
+      tags:
+      - Storage
+      - Item
+      parameters:
+      - name: id
+        in: path
+        description: storage id
+        required: true
+        style: simple
+        explode: false
+        schema:
+          minimum: 1
+          type: integer
+      requestBody:
+        description: Add new Item to Storage
+        content:
+          application/vnd.collection+json:
+            schema:
+              $ref: '#/components/schemas/CollectionObject'
+            example:
+              data:
+              - name: name
+                value: hdmi
+              - name: identifier
+                value: CABHDM01
+              - name: status
+                value: In storage
+              - name: category
+                value: Cable
+              - name: notes
+                value: In good condition
+              - name: serialNumber
+                value: AAABBB
+              - name: owner
+                value: IT
+      responses:
+        "201":
+          description: CREATED
+          headers:
+            Location:
+              description: Link to the registered item
+              style: simple
+              explode: false
+              schema:
+                type: string
+                format: url
+        "400":
+          description: BAD REQUEST
+          headers:
+            error:
+              $ref: '#/components/headers/Error'
+            message:
+              $ref: '#/components/headers/Message'
+        "409":
+          description: CONFLICT
+          headers:
+            error:
+              $ref: '#/components/headers/Error'
+            message:
+              $ref: '#/components/headers/Message'
+        "500":
+          description: INTERNAL SERVER ERROR
+          headers:
+            error:
+              $ref: '#/components/headers/Error'
+            message:
+              $ref: '#/components/headers/Message'
+        "404":
+          description: NOT FOUND
+          headers:
+            error:
+              $ref: '#/components/headers/Error'
+            message:
+              $ref: '#/components/headers/Message'
+  /item/{id}:
+    description: An Item registered with the inventory system.
+    get:
+      tags:
+      - Item
+      summary: GET Item
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/vnd.collection+json:
+              schema:
+                $ref: '#/components/schemas/CollectionObject'
+              examples:
+                Single Item Collection:
+                  $ref: '#/components/examples/SingleItemCollection'
+        "404":
+          description: NOT FOUND
+          headers:
+            error:
+              $ref: '#/components/headers/Error'
+            message:
+              $ref: '#/components/headers/Message'
+    put:
+      tags:
+      - Item
+      description: Update Item
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/vnd.collection+json:
+            schema:
+              $ref: '#/components/schemas/CollectionObject'
+            example:
+              data:
+              - name: name
+                value: hdmi
+              - name: identifier
+                value: CABHDM01
+              - name: status
+                value: In storage
+              - name: category
+                value: Cable
+              - name: notes
+                value: In good condition
+              - name: serialNumber
+                value: AAABBCCC
+              - name: owner
+                value: IT
+              - name: storage
+                value: box-A
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: BAD REQUEST
+          headers:
+            error:
+              $ref: '#/components/headers/Error'
+            message:
+              $ref: '#/components/headers/Message'
+        "409":
+          description: CONFLICT
+          headers:
+            error:
+              $ref: '#/components/headers/Error'
+            message:
+              $ref: '#/components/headers/Message'
+        "500":
+          description: INTERNAL SERVER ERROR
+          headers:
+            error:
+              $ref: '#/components/headers/Error'
+            message:
+              $ref: '#/components/headers/Message'
+        "404":
+          description: NOT FOUND
+          headers:
+            error:
+              $ref: '#/components/headers/Error'
+            message:
+              $ref: '#/components/headers/Message'
+    delete:
+      tags:
+      - Item
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "204":
+          description: NO CONTENT
+        "404":
+          description: NOT FOUND
+          headers:
+            error:
+              $ref: '#/components/headers/Error'
+            message:
+              $ref: '#/components/headers/Message'
+  /item/search:
+    summary: Search for Item
+    description: Search for a item that matched some search parameters.
+    get:
+      tags:
+      - Item
+      summary: Get matching Item
+      parameters:
+      - name: name
+        in: query
+        description: Name of item
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: identifier
+        in: query
+        description: Identifier of item
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: status
+        in: query
+        description: Status of item
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: category
+        in: query
+        description: Category of item
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: notes
+        in: query
+        description: Notes about item
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: serialNumber
+        in: query
+        description: Serial Number of item
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: owner
+        in: query
+        description: owner of item
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/vnd.collection+json:
+              schema:
+                $ref: '#/components/schemas/CollectionObject'
+              example:
+                Single Match:
+                  data:
+                  - name: name
+                    value: hdmi
+                  - name: identifier
+                    value: CABHDM01
+                  - name: status
+                    value: In storage
+                  - name: category
+                    value: Cable
+                  - name: notes
+                    value: In good condition
+                  - name: serialNumber
+                    value: AAABBCCC
+                  - name: owner
+                    value: IT
+                  - name: storage
+                    value: box-A
+        "404":
+          description: NOT FOUND
+          headers:
+            error:
+              $ref: '#/components/headers/Error'
+            message:
+              $ref: '#/components/headers/Message'
+components:
+  schemas:
+    DataObject:
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          type: string
+        value:
+          type: string
+        prompt:
+          type: string
+    LinkObject:
+      required:
+      - href
+      - rel
+      - render
+      type: object
+      properties:
+        href:
+          type: string
+          format: url
+        rel:
+          type: string
+        prompt:
+          type: string
+        name:
+          type: string
+        render:
+          type: string
+          enum:
+          - link
+          - image
+    QueryObject:
+      required:
+      - href
+      - rel
+      type: object
+      properties:
+        href:
+          type: string
+          format: url
+        rel:
+          type: string
+        prompt:
+          type: string
+        name:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/DataObject'
+    ItemObject:
+      required:
+      - href
+      type: object
+      properties:
+        href:
+          type: string
+          format: url
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/DataObject'
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/LinkObject'
+    CollectionObject:
+      required:
+      - collection
+      type: object
+      properties:
+        collection:
+          $ref: '#/components/schemas/CollectionObject_collection'
+    body:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/DataObject'
+    storage_id_body:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/DataObject'
+    CollectionObject_collection_error:
+      type: object
+      properties:
+        title:
+          type: string
+        code:
+          pattern: '[0-9]{3}'
+          type: string
+    CollectionObject_collection:
+      required:
+      - href
+      - version
+      type: object
+      properties:
+        version:
+          type: string
+          enum:
+          - "1.0"
+        href:
+          type: string
+          format: url
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/LinkObject'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItemObject'
+        queries:
+          type: array
+          items:
+            $ref: '#/components/schemas/QueryObject'
+        template:
+          $ref: '#/components/schemas/storage_id_body'
+        error:
+          $ref: '#/components/schemas/CollectionObject_collection_error'
+  examples:
+    emptyInventory:
+      value:
+        collection:
+          version: "1.0"
+          href: https://apinventory.alectan.dev
+          links:
+          - href: https://apinventory.alectan.dev
+            rel: inventory
+            prompt: All storages
+            name: Inventory
+            render: link
+          items: []
+          queries:
+          - href: https://apinventory.alectan.dev/storage/search
+            rel: search
+            prompt: Search storage
+            name: Search
+            render: link
+            data:
+            - name: name
+              value: ""
+            - name: date
+              value: ""
+            - name: location
+              value: ""
+            - name: notes
+              value: ""
+          templates:
+            data:
+            - name: name
+              value: ""
+            - name: location
+              value: ""
+            - name: notes
+              value: ""
+    oneStorage:
+      value:
+        collection:
+          version: "1.0"
+          href: https://apinventory.alectan.dev
+          links:
+          - href: https://apinventory.alectan.dev
+            rel: inventory
+            prompt: All storages
+            name: Inventory
+            render: link
+          items:
+          - href: https://apinventory.alectan.dev/storage/1
+            data:
+            - name: name
+              value: box-A
+            - name: date
+              value: 01/01/2021
+            - name: location
+              value: Storage Room A
+            - name: notes
+              value: Full
+            links:
+            - href: https://apinventory.alectan.dev/storage/1/items
+              rel: contains
+              prompt: Things stored in this storage
+              name: Collection of things
+              render: link
+          queries:
+          - href: https://apinventory.alectan.dev/storage/search
+            rel: search
+            prompt: Search storage
+            name: Search
+            render: link
+            data:
+            - name: name
+              value: ""
+            - name: date
+              value: ""
+            - name: location
+              value: ""
+            - name: notes
+              value: ""
+          templates:
+            date:
+            - name: name
+              value: ""
+            - name: location
+              value: ""
+            - name: notes
+              value: ""
+    ItemCollection:
+      value:
+        collection:
+          version: "1.0"
+          href: https://apinventory.alectan.dev/storage/1/items
+          links:
+          - href: https://apinventory.alectan.dev/storage
+            rel: stored by
+            prompt: Storage holding these items
+            name: Storage
+            render: link
+          items:
+          - href: https://apinventory.alectan.dev/item/1
+            data:
+            - name: name
+              value: hdmi
+            - name: identifier
+              value: CABHDM01
+            - name: status
+              value: In storage
+            - name: category
+              value: Cable
+            - name: notes
+              value: In good condition
+            - name: serialNumber
+              value: AAABBCCC
+            - name: owner
+              value: IT
+            - name: storage
+              value: box-A
+            links:
+            - href: https://apinventory.alectan.dev/storage/1
+              rel: stored by
+              prompt: Storage holding this item
+              name: Storage
+              render: link
+          - href: https://apinventory.alectan.dev/item/2
+            data:
+            - name: name
+              value: Acer Monitor
+            - name: identifier
+              value: DEVMON01
+            - name: status
+              value: In Use
+            - name: category
+              value: Device
+            - name: notes
+              value: In good condition
+            - name: serialNumber
+              value: DDDEEEGGG
+            - name: owner
+              value: IT
+            - name: storage
+              value: box-A
+            links:
+            - href: https://apinventory.alectan.dev/storage/1
+              rel: stored by
+              prompt: Storage holding this item
+              name: Storage
+              render: link
+          queries:
+          - href: https://apinventory.alectan.dev/item/search
+            re: search
+            prompt: Search for Thing
+            name: Search
+            data:
+            - name: name
+              value: ""
+            - name: identifier
+              value: ""
+            - name: status
+              value: ""
+            - name: category
+              value: ""
+            - name: notes
+              value: serialNumber
+            - name: serialNumber
+              value: ""
+            - name: owner
+              value: ""
+            - name: storage
+              value: ""
+          template:
+          - name: name
+            value: ""
+          - name: identifier
+            value: ""
+          - name: status
+            value: ""
+          - name: category
+            value: ""
+          - name: notes
+            value: serialNumber
+          - name: serialNumber
+            value: ""
+          - name: owner
+            value: ""
+          - name: storage
+            value: ""
+    SingleItemCollection:
+      value:
+        collection:
+          version: "1.0"
+          href: https://apinventory.alectan.dev/storage/1/items
+          links:
+          - href: https://apinventory.alectan.dev/storage
+            rel: stored by
+            prompt: Storage holding these items
+            name: Storage
+            render: link
+          items:
+          - href: https://apinventory.alectan.dev/item/1
+            data:
+            - name: name
+              value: hdmi
+            - name: identifier
+              value: CABHDM01
+            - name: status
+              value: In storage
+            - name: category
+              value: Cable
+            - name: notes
+              value: In good condition
+            - name: serialNumber
+              value: AAABBCCC
+            - name: owner
+              value: IT
+            - name: storage
+              value: box-A
+            links:
+            - href: https://apinventory.alectan.dev/storage/1
+              rel: stored by
+              prompt: Storage holding this item
+              name: Storage
+              render: link
+          queries:
+          - href: https://apinventory.alectan.dev/item/search
+            re: search
+            prompt: Search for Thing
+            name: Search
+            data:
+            - name: name
+              value: ""
+            - name: identifier
+              value: ""
+            - name: status
+              value: ""
+            - name: category
+              value: ""
+            - name: notes
+              value: serialNumber
+            - name: serialNumber
+              value: ""
+            - name: owner
+              value: ""
+            - name: storage
+              value: ""
+          template:
+          - name: name
+            value: ""
+          - name: identifier
+            value: ""
+          - name: status
+            value: ""
+          - name: category
+            value: ""
+          - name: notes
+            value: serialNumber
+          - name: serialNumber
+            value: ""
+          - name: owner
+            value: ""
+          - name: storage
+            value: ""
+  headers:
+    Error:
+      description: Title of the error
+      style: simple
+      explode: false
+      schema:
+        type: string
+    Message:
+      description: Description of the error.
+      style: simple
+      explode: false
+      schema:
+        type: string

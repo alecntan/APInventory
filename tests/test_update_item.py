@@ -42,7 +42,8 @@ def test_update_item(client_with_storages_and_items):
             ,{'name' : 'category', 'value' : 'Visual'}
             ,{'name' : 'notes', 'value' : 'Its an xlr not a hdmi'}
             ,{'name' : 'serialNumber', 'value' : 'ZZYY'}
-            ,{'name' : 'owner', 'value' : 'music'}]
+            ,{'name' : 'owner', 'value' : 'music'}
+            ,{'name' : 'storage', 'value' : 'box-B'}]
 
 
     assert data == expected_data
@@ -58,7 +59,8 @@ def test_update_item_name(client_with_item):
             ,{'name' : 'category', 'value' : ''}
             ,{'name' : 'notes', 'value' : 'In good condition!'}
             ,{'name' : 'serialNumber', 'value' : ''}
-            ,{'name' : 'owner', 'value' : ''}]
+            ,{'name' : 'owner', 'value' : ''}
+            ,{'name' : 'storage', 'value' : ''}]
 
     response = client_with_item.put('/item/1', json={'data' : new_item_data})
     assert response.status_code == 200
@@ -75,7 +77,9 @@ def test_update_item_name(client_with_item):
             ,{'name' : 'category', 'value' : 'Cable'}
             ,{'name' : 'notes', 'value' : 'In good condition!'}
             ,{'name' : 'serialNumber', 'value' : 'AABB'}
-            ,{'name' : 'owner', 'value' : 'tech'}]
+            ,{'name' : 'owner', 'value' : 'tech'}
+            ,{'name' : 'storage', 'value' : 'box-A'}]
+
 
 
     assert data == expected_data
@@ -89,7 +93,8 @@ def test_update_item_new_identifier(client_with_item):
             ,{'name' : 'category', 'value' : ''}
             ,{'name' : 'notes', 'value' : 'In good condition!'}
             ,{'name' : 'serialNumber', 'value' : ''}
-            ,{'name' : 'owner', 'value' : ''}]
+            ,{'name' : 'owner', 'value' : ''}
+            ,{'name' : 'storage', 'value' : ''}]
 
     response = client_with_item.put('/item/1', json={'data' : new_item_data})
     assert response.status_code == 200
@@ -106,8 +111,8 @@ def test_update_item_new_identifier(client_with_item):
             ,{'name' : 'category', 'value' : 'Cable'}
             ,{'name' : 'notes', 'value' : 'In good condition!'}
             ,{'name' : 'serialNumber', 'value' : 'AABB'}
-            ,{'name' : 'owner', 'value' : 'tech'}]
-
+            ,{'name' : 'owner', 'value' : 'tech'}
+            ,{'name' : 'storage', 'value' : 'box-A'}]
 
     assert data == expected_data
 
@@ -135,7 +140,8 @@ def test_update_item_status(client_with_item):
             ,{'name' : 'category', 'value' : ''}
             ,{'name' : 'notes', 'value' : 'In good condition!'}
             ,{'name' : 'serialNumber', 'value' : ''}
-            ,{'name' : 'owner', 'value' : ''}]
+            ,{'name' : 'owner', 'value' : ''}
+            ,{'name' : 'storage', 'value' : ''}]
 
     response = client_with_item.put('/item/1', json={'data' : new_item_data})
     assert response.status_code == 200
@@ -152,7 +158,8 @@ def test_update_item_status(client_with_item):
             ,{'name' : 'category', 'value' : 'Cable'}
             ,{'name' : 'notes', 'value' : 'In good condition!'}
             ,{'name' : 'serialNumber', 'value' : 'AABB'}
-            ,{'name' : 'owner', 'value' : 'tech'}]
+            ,{'name' : 'owner', 'value' : 'tech'}
+            ,{'name' : 'storage', 'value' : 'box-A'}]
 
 
     assert data == expected_data
@@ -165,7 +172,8 @@ def test_update_item_category(client_with_item):
             ,{'name' : 'category', 'value' : 'Visual'}
             ,{'name' : 'notes', 'value' : 'In good condition!'}
             ,{'name' : 'serialNumber', 'value' : ''}
-            ,{'name' : 'owner', 'value' : ''}]
+            ,{'name' : 'owner', 'value' : ''}
+            ,{'name' : 'storage', 'value' : ''}]
 
     response = client_with_item.put('/item/1', json={'data' : new_item_data})
     assert response.status_code == 200
@@ -182,7 +190,8 @@ def test_update_item_category(client_with_item):
             ,{'name' : 'category', 'value' : 'Visual'}
             ,{'name' : 'notes', 'value' : 'In good condition!'}
             ,{'name' : 'serialNumber', 'value' : 'AABB'}
-            ,{'name' : 'owner', 'value' : 'tech'}]
+            ,{'name' : 'owner', 'value' : 'tech'}
+            ,{'name' : 'storage', 'value' : 'box-A'}]
 
 
     assert data == expected_data
@@ -196,7 +205,8 @@ def test_update_item_owner(client_with_item):
             ,{'name' : 'category', 'value' : ''}
             ,{'name' : 'notes', 'value' : 'In good condition!'}
             ,{'name' : 'serialNumber', 'value' : ''}
-            ,{'name' : 'owner', 'value' : 'music'}]
+            ,{'name' : 'owner', 'value' : 'music'}
+            ,{'name' : 'storage', 'value' : ''}]
 
     response = client_with_item.put('/item/1', json={'data' : new_item_data})
     assert response.status_code == 200
@@ -213,7 +223,8 @@ def test_update_item_owner(client_with_item):
             ,{'name' : 'category', 'value' : 'Cable'}
             ,{'name' : 'notes', 'value' : 'In good condition!'}
             ,{'name' : 'serialNumber', 'value' : 'AABB'}
-            ,{'name' : 'owner', 'value' : 'music'}]
+            ,{'name' : 'owner', 'value' : 'music'}
+            ,{'name' : 'storage', 'value' : 'box-A'}]
 
 
     assert data == expected_data
@@ -226,7 +237,8 @@ def test_update_item_serialNumber(client_with_item):
             ,{'name' : 'category', 'value' : ''}
             ,{'name' : 'notes', 'value' : 'In good condition!'}
             ,{'name' : 'serialNumber', 'value' : 'MMM'}
-            ,{'name' : 'owner', 'value' : ''}]
+            ,{'name' : 'owner', 'value' : ''}
+            ,{'name' : 'storage', 'value': ''}]
 
     response = client_with_item.put('/item/1', json={'data' : new_item_data})
     assert response.status_code == 200
@@ -243,7 +255,9 @@ def test_update_item_serialNumber(client_with_item):
             ,{'name' : 'category', 'value' : 'Cable'}
             ,{'name' : 'notes', 'value' : 'In good condition!'}
             ,{'name' : 'serialNumber', 'value' : 'MMM'}
-            ,{'name' : 'owner', 'value' : 'tech'}]
+            ,{'name' : 'owner', 'value' : 'tech'}
+            ,{'name' : 'storage', 'value' : 'box-A'}]
+
 
 
     assert data == expected_data
@@ -300,7 +314,8 @@ def test_update_item_storage(client_with_storages_and_items):
             ,{'name' : 'category', 'value' : 'Cable'}
             ,{'name' : 'notes', 'value' : 'In good condition!'}
             ,{'name' : 'serialNumber', 'value' : 'AABB'}
-            ,{'name' : 'owner', 'value' : 'tech'}]
+            ,{'name' : 'owner', 'value' : 'tech'}
+            ,{'name' : 'storage', 'value' : 'box-B'}]
 
 
     assert data == expected_data

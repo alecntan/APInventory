@@ -14,7 +14,7 @@ def test_search_by_category(client_with_item):
     assert len(items) == 2
     item = items[0]
     num_data_vals = item['data']
-    assert len(num_data_vals) == 8
+    assert len(num_data_vals) == 9
 
 def test_search_by_missing_category(client_with_item):
 
@@ -39,7 +39,7 @@ def test_search_by_name(client_with_item):
     items = response_json['collection']['items']
     assert len(items) == 1
     item = items[0]
-    assert len(item['data']) == 8
+    assert len(item['data']) == 9
      
 
 def test_search_by_missing_name(client_with_item):
@@ -66,7 +66,7 @@ def test_search_by_identifier(client_with_item):
     items = response_json['collection']['items']
     assert len(items) == 1
     item = items[0]
-    assert len(item['data']) == 8
+    assert len(item['data']) == 9
 
 
 def search_by_missing_identifier(client_with_item):
@@ -94,7 +94,7 @@ def test_search_by_status(client_with_item):
     items = response_json['collection']['items']
     assert len(items) == 1
     item = items[0]
-    assert len(item['data']) == 8 
+    assert len(item['data']) == 9
 
 def search_by_missing_status(client_with_item):
 
@@ -121,7 +121,7 @@ def test_search_by_serialNum(client_with_item):
     items = response_json['collection']['items']
     assert len(items) == 1
     item = items[0]
-    assert len(item['data']) == 8
+    assert len(item['data']) == 9
      
 
 def search_by_missing_serialNum(client_with_item):
@@ -149,7 +149,7 @@ def test_search_by_owner(client_with_item):
     items = response_json['collection']['items']
     assert len(items) == 2
     item = items[0]
-    assert len(item['data']) == 8
+    assert len(item['data']) == 9
        
 
 def search_by_missing_owner(client_with_item):

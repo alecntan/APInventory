@@ -26,7 +26,8 @@ def test_add_item(client_with_storage):
                      {'name' : 'category', 'value' : 'Cable'},
                      {'name' : 'notes', 'value' : 'In good condition!'},
                      {'name' : 'serialNumber', 'value' : 'AABBCC001'},
-                     {'name' : 'owner', 'value' : 'Tech Team'}]
+                     {'name' : 'owner', 'value' : 'Tech Team'},
+                     {'name' : 'storage', 'value' : 'box-A'}]
 
     assert item_data == expected_data
     

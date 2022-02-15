@@ -222,7 +222,7 @@ def get_storage_items(id):
         for i in items:
 
             item_href = build_item_url(request.url_root, i.id)
-            response.store_item(item_href, storage_href, i.name, datetime.now(), i.identifier, i.status, i.category.name, i.notes, i.serialNumber, i.owner)
+            response.store_item(item_href, storage_href, i.name, datetime.now(), i.identifier, i.status, i.category.name, i.notes, i.serialNumber, i.owner, i.storage.name)
 
         return get_collection_response(response.get_json(), '200')
 
@@ -335,7 +335,7 @@ def get_item(id):
     storage_href = build_storage_url(request.url_root, item.storage_id)
     response = CollectionOfItem(request.base_url)
     response.set_storage_link(storage_href)
-    response.store_item(request.base_url, storage_href, item.name, datetime.now(), item.identifier, item.status, item.category.name, item.notes, item.serialNumber, item.owner)
+    response.store_item(request.base_url, storage_href, item.name, datetime.now(), item.identifier, item.status, item.category.name, item.notes, item.serialNumber, item.owner, item.storage.name)
 
     return get_collection_response(response.get_json(), '200')
 
@@ -475,7 +475,8 @@ def search_item():
                             i.category.name,
                             i.notes,
                             i.serialNumber,
-                            i.owner) 
+                            i.owner,
+                            i.storage.name) 
 
     return get_collection_response(response.get_json(), '200')
    

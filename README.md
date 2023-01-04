@@ -9,8 +9,6 @@
    A RESTful API for Inventory Systems
     <br />
     <a href="https://apinventory.alectan.dev/swagger/">Swagger UI</a>
-    ·
-    <a href="https://blog.alectan.dev/Inventory_System/">About</a>
   </p>
 </div>
 

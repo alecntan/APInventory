@@ -23,8 +23,6 @@ Users can:
   <li>Save storage and item notes</li>
 </ul>
 
-If you would like to know how the project started, click [here](https://blog.alectan.dev/Inventory_System/).
-
 ### Built with
 <ul>
   <li><a href='https://flask.palletsprojects.com/en/2.0.x/'>Flask</a></li>
